@@ -13,15 +13,11 @@ new_phonebook = list()
 new_phonebook.append(contacts_list[0])
 contacts_list.pop(0)
 for contact in contacts_list:
-    pattern_fio = re.compile("(\w*)\s*(\w*)\s*(\w*)")
-    fio_list = [contact[0], contact[1], contact[2]]
-    fio = ' '.join(fio_list)
-    sub_pattern_lname = r"\1"
-    sub_pattern_fname = r"\2"
-    sub_pattern_sname = r"\3"
-    contact[0] = pattern_fio.sub(sub_pattern_lname, fio)
-    contact[1] = pattern_fio.sub(sub_pattern_fname, fio)
-    contact[2] = pattern_fio.sub(sub_pattern_sname, fio)
+    fio = ' '.join([contact[0], contact[1], contact[2]])
+    contacts = re.findall("\w+", fio)
+    while len(contacts) < 3:
+        contacts.append('')
+    contact[0], contact[1], contact[2] = contacts
 
     pattern_phone = re.compile("(\+7|8)\s*\(?(\d{3})[\)\-]?\s*(\d{3})\-?(\d{2})\-?(\d{2})(\s*\(?(доб\.\s*\d{4})\)?)?")
     sub_pattern_phone = r"+7(\2)\3-\4-\5 \7"
@@ -30,17 +26,11 @@ for contact in contacts_list:
     double = False
     for new_contact in new_phonebook:
         if new_contact[0] == contact[0] and new_contact[1] == contact[1] and (new_contact[2] == contact[2] or new_contact[2] == '' or contact[2] == ''):
-            new_contact[0] = max(new_contact[0],contact[0])
-            new_contact[1] = max(new_contact[1], contact[1])
-            new_contact[2] = max(new_contact[2], contact[2])
-            new_contact[3] = max(new_contact[3], contact[3])
-            new_contact[4] = max(new_contact[4], contact[4])
-            new_contact[5] = max(new_contact[5], contact[5])
-            new_contact[6] = max(new_contact[6], contact[6])
+            for i in range(7):
+                new_contact[i] = max(new_contact[i], contact[i])
             double = True
             break
-
-    if not double:
+    else:
         new_phonebook.append(contact)
 
 
